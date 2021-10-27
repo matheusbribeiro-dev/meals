@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   
   Settings settings = Settings();
   List<Meal> _availableMeals = dummyMeals;
+  List<Meal> _favoriteMeals = [];
 
   void _filterMeals(Settings settings) 
   {
@@ -37,10 +38,25 @@ class _MyAppState extends State<MyApp> {
           !filterGlutten
           && !filterLactose
           && !filterVegan
-          && !filterVegetarian;
+        && !filterVegetarian;
       }).toList();
     });
   }
+
+  void _toggleFavorite(Meal meal)
+  {
+    setState(() {
+      _favoriteMeals.contains(meal) 
+        ? _favoriteMeals.remove(meal)
+        : _favoriteMeals.add(meal);
+    });
+  }
+
+  bool _isFavorite(Meal meal) 
+  {
+    return _favoriteMeals.contains(meal);
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +78,9 @@ class _MyAppState extends State<MyApp> {
         canvasColor: const Color.fromRGBO(255, 254, 229, 1)
       ),
       routes: {
-        AppRoutes.home : (ctx) => const TabsScreen(),
+        AppRoutes.home : (ctx) => TabsScreen(_favoriteMeals),
         AppRoutes.categoriesMeals : (ctx) => CategoriesMealsScreen(_availableMeals),
-        AppRoutes.mealDetail : (ctx) => const MealDetailScreen(),
+        AppRoutes.mealDetail : (ctx) => MealDetailScreen(_isFavorite,_toggleFavorite),
         AppRoutes.settings : (ctx) => SettingsScreen(settings, _filterMeals)
       }
     );
